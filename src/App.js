@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import MessageList from "./components/MessageList";
+import Toolbar from "./components/Toolbar";
 
-const seedData = [
+const messageList = [
   {
     "id": 1,
     "subject": "You can't input the protocol without calculating the mobile RSS protocol!",
@@ -64,15 +66,39 @@ const seedData = [
 ]
 
 class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { 
+      messageList: messageList 
+    }
+  }
+
+  onUpdate = (message) => {
+    let newMessage = this.state.messageList.find(
+      tempMessage => tempMessage.id === message.id)
+
+    this.setState((prevState) => {
+      return {
+        messageList: [
+          ...prevState.messageList.splice(0, prevState.messageList.indexOf(newMessage)),
+          message,
+          ...prevState.messageList.splice(prevState.messageList.indexOf(newMessage) + 1)
+        ]
+      }
+    })
+  }
+
+  messageListUpdate = (messageList) => {
+    this.setState({
+      messageList: messageList
+    })
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Inbox</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
+        <Toolbar messageList={this.state.messageList} messageListUpdate={this.messageListUpdate} />
+        <MessageList messageList={this.state.messageList} onUpdate={this.onUpdate} />
       </div>
     );
   }

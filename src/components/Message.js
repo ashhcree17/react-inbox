@@ -1,6 +1,13 @@
 import React from 'react'
 
 const Message = ({message, onUpdate}) => {
+  const messageStyle = () => {
+    let rowMessage = "row message"
+    message.selected ? rowMessage +=  " selected" : rowMessage 
+    message.read ? rowMessage +=  " read" : rowMessage +=  " unread"
+    return rowMessage;
+  }
+
   const toggleSelect = () => {
     message.selected ? message={...message,selected: false} 
       : message={...message,selected: true}
@@ -14,8 +21,7 @@ const Message = ({message, onUpdate}) => {
   }
 
   return (
-    <div className={`row message ${message.selected ? "selected" : 
-            message.read ? "read" : "unread"}`}>
+    <div className={messageStyle()}>
       <div className="col-xs-1">
         <div className="row">
           <div className="col-xs-2">

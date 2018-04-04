@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Message = ({message, onUpdate}) => {
+const Message = ({message, onUpdate, messageListUpdate}) => {
   const messageStyle = () => {
     let rowMessage = "row message"
-    message.selected ? rowMessage +=  " selected" : rowMessage 
+    message.selected ? rowMessage +=  " selected" : rowMessage = rowMessage
     message.read ? rowMessage +=  " read" : rowMessage +=  " unread"
     return rowMessage;
   }
@@ -11,13 +11,17 @@ const Message = ({message, onUpdate}) => {
   const toggleSelect = () => {
     message.selected ? message={...message,selected: false} 
       : message={...message,selected: true}
-    onUpdate(message)
+    messageListUpdate(message)
   }
 
   const toggleStar = () => {
-    message.starred ? message={...message,starred: false} 
-      : message={...message,starred: true}
-    onUpdate(message)
+    const starredMessage = {
+      messageIds: [message.id],
+      command: "star",
+      star: !message.starred
+    }
+
+    onUpdate(starredMessage)
   }
 
   return (

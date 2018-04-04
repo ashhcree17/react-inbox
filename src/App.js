@@ -1,104 +1,102 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import MessageList from "./components/MessageList";
 import Toolbar from "./components/Toolbar";
-
-const messageList = [
-  {
-    "id": 1,
-    "subject": "You can't input the protocol without calculating the mobile RSS protocol!",
-    "read": false,
-    "starred": true,
-    "labels": ["dev", "personal"]
-  },
-  {
-    "id": 2,
-    "subject": "connecting the system won't do anything, we need to input the mobile AI panel!",
-    "read": false,
-    "starred": false,
-    "selected": true,
-    "labels": []
-  },
-  {
-    "id": 3,
-    "subject": "Use the 1080p HTTP feed, then you can parse the cross-platform hard drive!",
-    "read": false,
-    "starred": true,
-    "labels": ["dev"]
-  },
-  {
-    "id": 4,
-    "subject": "We need to program the primary TCP hard drive!",
-    "read": true,
-    "starred": false,
-    "selected": true,
-    "labels": []
-  },
-  {
-    "id": 5,
-    "subject": "If we override the interface, we can get to the HTTP feed through the virtual EXE interface!",
-    "read": false,
-    "starred": false,
-    "labels": ["personal"]
-  },
-  {
-    "id": 6,
-    "subject": "We need to back up the wireless GB driver!",
-    "read": true,
-    "starred": true,
-    "labels": []
-  },
-  {
-    "id": 7,
-    "subject": "We need to index the mobile PCI bus!",
-    "read": true,
-    "starred": false,
-    "labels": ["dev", "personal"]
-  },
-  {
-    "id": 8,
-    "subject": "If we connect the sensor, we can get to the HDD port through the redundant IB firewall!",
-    "read": true,
-    "starred": true,
-    "labels": []
-  }
-]
+import ComposeMessageForm from "./components/ComposeMessageForm"
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = { 
-      messageList: messageList 
+      messageList: [],
+      composeMessage: false
     }
   }
 
-  onUpdate = (message) => {
-    let newMessage = this.state.messageList.find(
+  async componentDidMount() {
+    await this.retrieveMessages()
+  }
+
+  async retrieveMessages() {
+    const messagesResponse = await fetch(`/api/messages`)
+    const messagesJson = await messagesResponse.json()
+
+    this.setState({ messageList: messagesJson._embedded.messages })
+  }
+
+  toggleCompose() {
+    this.setState((prevState) => {
+      return {
+        messageList: prevState.messageList,
+        composeMessage: !prevState.composeMessage
+      }
+    })
+  }
+
+  onUpdate(message) {
+    let foundMessage = this.state.messageList.find(
       tempMessage => tempMessage.id === message.id)
 
     this.setState((prevState) => {
       return {
         messageList: [
-          ...prevState.messageList.splice(0, prevState.messageList.indexOf(newMessage)),
+          ...prevState.messageList.splice(0, prevState.messageList.indexOf(foundMessage)),
           message,
-          ...prevState.messageList.splice(prevState.messageList.indexOf(newMessage) + 1)
+          ...prevState.messageList.splice(prevState.messageList.indexOf(foundMessage) + 1)
         ]
       }
     })
   }
 
-  messageListUpdate = (messageList) => {
+  async newMessage(message) {
+    let response = await fetch(`/api/messages`, 
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: 
+        {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    )
+
+    let messageJson = await response.json()
     this.setState({
-      messageList: messageList
+      messageList: 
+        [
+          ...this.state.messageList,
+          messageJson
+        ],
+      composeMessage: false
     })
+  }
+
+  async messageListUpdate(command) {
+    await fetch(`/api/messages`, 
+      {
+        method: 'PATCH',
+        body: JSON.stringify(command),
+        headers: 
+          {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+      }
+    )
+    await this.retrieveMessages()
+  }
+
+  handleSelectedMessage(messageList) {
+    this.setState({ messageList: messageList })
   }
 
   render() {
     return (
       <div>
-        <Toolbar messageList={this.state.messageList} messageListUpdate={this.messageListUpdate} />
-        <MessageList messageList={this.state.messageList} onUpdate={this.onUpdate} />
+        <Toolbar messageList={this.state.messageList} messageListUpdate={this.messageListUpdate} toggleCompose={this.toggleCompose} handleSelectedMessage={this.handleSelectedMessage} />
+        {this.state.composeMessage ? <ComposeMessageForm newMessage={this.newMessage} /> : null}
+        <MessageList messageList={this.state.messageList} onUpdate={this.onUpdate} messageListUpdate={this.messageListUpdate} />
       </div>
     );
   }

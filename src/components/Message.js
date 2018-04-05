@@ -11,7 +11,7 @@ const Message = ({message, onUpdate, messageListUpdate}) => {
   const toggleSelect = () => {
     message.selected ? message={...message,selected: false} 
       : message={...message,selected: true}
-    messageListUpdate(message)
+    onUpdate(message)
   }
 
   const toggleStar = () => {
@@ -21,7 +21,7 @@ const Message = ({message, onUpdate, messageListUpdate}) => {
       star: !message.starred
     }
 
-    onUpdate(starredMessage)
+    messageListUpdate(starredMessage)
   }
 
   return (

@@ -18,13 +18,11 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
   		message => message.selected === true)
   		.map(message => message.id)
 
-  	let command = {
-  		messageIds: messageIds,
-  		command: "read",
-  		read: true
-  	}
-
-    messageListUpdate(command)
+    messageListUpdate({
+      messageIds: messageIds,
+      command: "read",
+      read: true
+    })
   }
 
   const markAsUnread = () => {
@@ -32,13 +30,11 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
   		message => message.selected === true)
   		.map(message => message.id)
 
-  	let command = {
-  		messageIds: messageIds,
-  		command: "read",
-  		read: false
-  	}
-
-    messageListUpdate(command)
+    messageListUpdate({
+      messageIds: messageIds,
+      command: "read",
+      read: false
+    })
   }
 
   const deleteSelectedMessages = () => {
@@ -46,12 +42,10 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
   		message => message.selected === true)
   		.map(message => message.id)
 
-  	let command = {
-  		messageIds: messageIds,
-  		command: "delete"
-  	}
-
-    messageListUpdate(command)  
+    messageListUpdate({
+      messageIds: messageIds,
+      command: "delete"
+    })  
   }
 
   const applyLabel = (event) => {
@@ -59,14 +53,12 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
   		message => message.selected === true)
   		.map(message => message.id)
 
-  	let command = {
-  		messageIds: messageIds,
-  		command: "applyLabel",
-  		label: event.target.value
-  	}
-
 		event.target.value = "Apply label"
-    messageListUpdate(command)
+    messageListUpdate({
+      messageIds: messageIds,
+      command: "applyLabel",
+      label: event.target.value
+    })
   }
 
   const removeLabel = (event) => {
@@ -74,14 +66,12 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
   		message => message.selected === true)
   		.map(message => message.id)
 
-  	let command = {
-  		messageIds: messageIds,
-  		command: "removeLabel",
-  		label: event.target.value
-  	}
-
 		event.target.value = "Remove label"
-    messageListUpdate(command)
+    messageListUpdate({
+      messageIds: messageIds,
+      command: "removeLabel",
+      label: event.target.value
+    })
   }
 
   const disabled = () => {

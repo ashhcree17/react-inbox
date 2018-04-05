@@ -7,6 +7,12 @@ import ComposeMessageForm from "./components/ComposeMessageForm"
 class App extends Component {
   constructor(props) {
     super(props)
+    this.retrieveMessages = this.retrieveMessages.bind(this)
+    this.toggleCompose = this.toggleCompose.bind(this) 
+    this.onUpdate = this.onUpdate.bind(this)
+    this.newMessage = this.newMessage.bind(this)
+    this.messageListUpdate = this.messageListUpdate.bind(this)
+    this.handleSelectedMessage = this.handleSelectedMessage.bind(this)
     this.state = { 
       messageList: [],
       composeMessage: false

@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-const Message = ({message, onUpdate, messageListUpdate}) => {
+const Message = ({ message, selectMessage, starMessage }) => {
   const messageStyle = () => {
     let rowMessage = "row message"
     message.selected ? rowMessage +=  " selected" : rowMessage = rowMessage
@@ -9,19 +9,11 @@ const Message = ({message, onUpdate, messageListUpdate}) => {
   }
 
   const toggleSelect = () => {
-    message.selected ? message={...message,selected: false} 
-      : message={...message,selected: true}
-    onUpdate(message)
+    selectMessage(message.id)
   }
 
   const toggleStar = () => {
-    const starredMessage = {
-      messageIds: [message.id],
-      command: "star",
-      star: !message.starred
-    }
-
-    messageListUpdate(starredMessage)
+    starMessage(message)
   }
 
   return (

@@ -1,77 +1,47 @@
-import React from 'react'
+import React from 'react';
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import {
+  addLabel,
+  removeLabel,
+  deleteSelectedMessages,
+  selectMessages,
+  setCompose,
+  toggleMessagesRead
+} from "../actions"
 
-const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedMessage}) => {
+const ToolBar = ({ messageList, compose, toggleMessagesRead, setCompose, selectMessages, deleteSelectedMessages, addLabel, removeLabel }) => {
 	const selectedMessageCount = messageList.filter(message =>  message.selected === true).length;
 	const unreadMessageCount = messageList.filter(message => message.read !== true).length;
 
+  const toggleCompose = () => {
+    setCompose(!compose)
+  }
+
   const selectButton = () => {
-    if (selectedMessageCount === messageList.length) {
-        messageList.map(message => message.selected = false)
-    } else {
-        messageList.map(message => message.selected = true)
-    }
-    handleSelectedMessage(messageList)
+    selectMessages(messageList)
   }
 
   const markAsRead = () => {
-  	let messageIds = messageList.filter(
-  		message => message.selected === true)
-  		.map(message => message.id)
-
-    messageListUpdate({
-      messageIds: messageIds,
-      command: "read",
-      read: true
-    })
+    toggleMessagesRead(messageList, true)
   }
 
   const markAsUnread = () => {
-  	let messageIds = messageList.filter(
-  		message => message.selected === true)
-  		.map(message => message.id)
-
-    messageListUpdate({
-      messageIds: messageIds,
-      command: "read",
-      read: false
-    })
+    toggleMessagesRead(messageList, false)
   }
 
-  const deleteSelectedMessages = () => {
-  	let messageIds = messageList.filter(
-  		message => message.selected === true)
-  		.map(message => message.id)
-
-    messageListUpdate({
-      messageIds: messageIds,
-      command: "delete"
-    })  
+  const deleteMessages = () => {
+  	 deleteSelectedMessages(messageList)
   }
 
-  const applyLabel = (event) => {
-  	let messageIds = messageList.filter(
-  		message => message.selected === true)
-  		.map(message => message.id)
-
-		event.target.value = "Apply label"
-    messageListUpdate({
-      messageIds: messageIds,
-      command: "applyLabel",
-      label: event.target.value
-    })
+  const applyMessageLabel = (event) => {
+    addLabel(messageList, event.target.value)
+    event.target.value = "Apply label"
   }
 
-  const removeLabel = (event) => {
-  	let messageIds = messageList.filter(
-  		message => message.selected === true)
-  		.map(message => message.id)
-
-		event.target.value = "Remove label"
-    messageListUpdate({
-      messageIds: messageIds,
-      command: "removeLabel",
-      label: event.target.value
-    })
+  const removeMessageLabel = (event) => {
+    removeLabel(messageList, event.target.value)
+    event.target.value = "Remove label"
   }
 
   const disabled = () => {
@@ -108,21 +78,21 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
           Mark As Unread
         </button>
 
-        <select className="form-control label-select" onChange={applyLabel} disabled={disabled()}>
+        <select className="form-control label-select" onChange={applyMessageLabel} disabled={disabled()}>
           <option>Apply label</option>
           <option value="dev">dev</option>
           <option value="personal">personal</option>
           <option value="gschool">gschool</option>
         </select>
 
-        <select className="form-control label-select" onChange={removeLabel} disabled={disabled()}>
+        <select className="form-control label-select" onChange={removeMessageLabel} disabled={disabled()}>
           <option>Remove label</option>
           <option value="dev">dev</option>
           <option value="personal">personal</option>
           <option value="gschool">gschool</option>
 	      </select>
 
-	      <button className="btn btn-default" onClick={deleteSelectedMessages} disabled={disabled()}>
+	      <button className="btn btn-default" onClick={deleteMessages} disabled={disabled()}>
 	        <i className="fa fa-trash-o"></i>
 	      </button>
       </div>
@@ -130,4 +100,21 @@ const ToolBar = ({messageList, messageListUpdate, toggleCompose, handleSelectedM
     )
 }
 
-export default ToolBar
+const mapStateToProps = state => ({
+  messageList: state.messages.all,
+  compose: state.messages.compose
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  toggleMessagesRead: toggleMessagesRead,
+  setCompose: setCompose,
+  deleteSelectedMessages: deleteSelectedMessages,
+  addLabel: addLabel,
+  selectMessages: selectMessages,
+  removeLabel: removeLabel,
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ToolBar)

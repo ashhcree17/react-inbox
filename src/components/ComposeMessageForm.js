@@ -1,15 +1,15 @@
 import React from 'react'
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { sendMessage } from '../actions'
 
-const ComposeForm = ({ newMessage }) => {
+const ComposeMessageForm = ({ sendMessage }) => {
 	const submitMessage = (e) => {
 		e.preventDefault()
-
-		const message = {
+		sendMessage({
       subject: e.target.subject.value,
       body: e.target.body.value
-		} 
-		
-		newMessage(message)
+    })
   }
 
   return (
@@ -41,4 +41,13 @@ const ComposeForm = ({ newMessage }) => {
   )
 }
 
-export default ComposeForm 
+const mapStateToProps = () => ({})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  sendMessage: sendMessage,
+}, dispatch)
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ComposeMessageForm)
